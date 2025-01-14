@@ -68,6 +68,7 @@ const StudentAbasentTable = () => {
         <table className="min-w-full divide-y divide-gray-700">
           <thead>
             <tr>
+              
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                 Name
               </th>
@@ -104,7 +105,7 @@ const StudentAbasentTable = () => {
                       </div>
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-100">{user.name}</div>
+                      <div className="text-sm font-medium text-gray-100">{user.Name}</div>
                     </div>
                   </div>
                 </td>
@@ -128,6 +129,7 @@ const StudentAbasentTable = () => {
                   <span className="text-sm text-gray-300">
                     {user.BL_Engineer}
                   </span>
+
                 </td>
               </motion.tr>
             ))}

@@ -34,7 +34,7 @@ const StudentAbasentTable = () => {
     setSearchTerm(term);
     const filtered = users.filter(
       (user) =>
-        user.Name.toLowerCase().includes(term) || user.Email_Id.toLowerCase().includes(term)
+        user.Name.toLowerCase().includes(term) || user.Email_Id.toLowerCase().includes(term) || user.Cohort.toLowerCase().includes(term)
     );
     setFilteredUsers(filtered);
   };

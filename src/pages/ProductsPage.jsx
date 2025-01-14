@@ -13,6 +13,7 @@ import StudentTable from "../components/products/StudentTable";
 const ProductsPage = () => {
 	const [totapresentlStudent, setpresentTotalStudent] = useState(null);
 	const [totalAbasent, setTotalAbasent] = useState(null);
+  const[totalStudent, setTotalStudent] = useState(null);
   
 	const totalPresetStudent = async () => {
     try {
@@ -44,13 +45,26 @@ const ProductsPage = () => {
       console.error("Error fetching student data:", error);
     }
   };
+  const handleFetchTotalStudent = async () => {
+    try {
+      const response = await axios.get(
+        "https://x8ki-letl-twmt.n7.xano.io/api:ufB-AVZm/studentdata",
+        { headers: { "Content-Type": "application/json" } }
+      );
+      
+    // Initialize filtered data
+    setTotalStudent(response?.data?.length);
+      console.log(response?.data);
+      console.log(" smn")
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
   
 	useEffect(() => {
   totalPresetStudent();
   totalAbasentStudent()
-  
-  
-  
+  handleFetchTotalStudent();
 	}, []);
 	return (
 		<div className='flex-1 overflow-auto relative z-10'>
@@ -64,9 +78,9 @@ const ProductsPage = () => {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 1 }}
 				>
-					<StatCard name='Total Present Student ' icon={Package} value={ totapresentlStudent} color='#6366F1' />
+					<StatCard name='Total Present Student ' icon={Package} value={ totapresentlStudent!=null ? totapresentlStudent:0} color='#6366F1' />
 					<StatCard name='Total Abasent Student ' icon={TrendingUp} value={totalAbasent!=null ? totalAbasent: 0} color='#10B981' />
-					<StatCard name='Total Student' icon={AlertTriangle} value={239} color='#F59E0B' />
+					<StatCard name='Total Student' icon={AlertTriangle} value={totalStudent!=null ? totalStudent: 0} color='#F59E0B' />
 					
 				</motion.div>
 

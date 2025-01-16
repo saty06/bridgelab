@@ -80,7 +80,7 @@ const ProductsPage = () => {
 					transition={{ duration: 1 }}
 				>
 					<StatCard name='Total Present Student ' icon={Package} value={ totapresentlStudent!=null ? totapresentlStudent:0} color='#6366F1' />
-					<StatCard name='Total Abasent Student ' icon={TrendingUp} value={totalAbasent!=null ? totalAbasent: 0} color='#10B981' />
+					<StatCard name='Total Absent Student ' icon={TrendingUp} value={totalAbasent!=null ? totalAbasent: 0} color='#10B981' />
 					<StatCard name='Total Student' icon={AlertTriangle} value={totalStudent!=null ? totalStudent: 0} color='#F59E0B' />
 					
 				</motion.div>

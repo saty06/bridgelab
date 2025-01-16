@@ -21,7 +21,7 @@ function App() {
 			
 				<Route path='/' element={<StudentTable />} />
 				<Route path='/present' element={<UsersPage />} />
-				<Route path='/abasent' element={<SalesPage />} />
+				<Route path='/absent' element={<SalesPage />} />
 			
 			</Routes>
 		</div>

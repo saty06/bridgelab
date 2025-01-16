@@ -18,7 +18,7 @@ const SIDEBAR_ITEMS = [
 //   },
   { name: "Student", icon: ShoppingBag, color: "#8B5CF6", href: "/" },
   { name: "Present", icon: Users, color: "#10B981", href: "/present" },
-  { name: "Abasent", icon: Users, color: "#F59E0B", href: "/abasent" },
+  { name: "Absent", icon: Users, color: "#F59E0B", href: "/absent" },
   
 ];
 

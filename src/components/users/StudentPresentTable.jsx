@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import axios from "axios";
+import ImageBackground from "../image/image";
+
 
 const StudentPresentTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,7 +46,11 @@ const StudentPresentTable = () => {
   }, []); // Added an empty dependency array to prevent infinite loop
 
   return (
-    <motion.div
+
+    <>
+  {
+    users.length>0 && (
+      <motion.div
       className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -63,7 +69,7 @@ const StudentPresentTable = () => {
           <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         </div>
       </div>
-
+    
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-700">
           <thead>
@@ -82,7 +88,7 @@ const StudentPresentTable = () => {
               </th>
             </tr>
           </thead>
-
+    
           <tbody className="divide-y divide-gray-700">
             {filteredUsers.map((user, index) => (
               <motion.tr
@@ -103,17 +109,17 @@ const StudentPresentTable = () => {
                     </div>
                   </div>
                 </td>
-
+    
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-300">{user.email}</div>
                 </td>
-
+    
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
                     {user.attendance || "N/A"}
                   </span>
                 </td>
-
+    
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="text-sm text-gray-300">
                     {user.today || "Not Available"}
@@ -125,6 +131,20 @@ const StudentPresentTable = () => {
         </table>
       </div>
     </motion.div>
+    )
+  }
+  {
+    users.length<=0 && (
+
+<ImageBackground></ImageBackground>
+
+    )
+  }
+ 
+
+ 
+   
+    </>
   );
 };
 

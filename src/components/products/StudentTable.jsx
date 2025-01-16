@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import ImageBackground from "../image/image";
+
 
 const StudentTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,7 +18,8 @@ const StudentTable = () => {
         { headers: { "Content-Type": "application/json" } }
       );
       setProducts(response.data); // Set the fetched data
-      setFilteredProducts(response.data); // Initialize filtered data
+      setFilteredProducts(response.data);
+    // Initialize filtered data
       console.log(response?.data);
       console.log(" smn")
     } catch (error) {
@@ -43,11 +46,17 @@ const StudentTable = () => {
   }, []);
 
   return (
-    <motion.div
+    <>
+    
+  
+
+  {
+     products.length>0 &&(
+      <motion.div
       className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 mb-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
+      transition={{ delay: 0.2 }} 
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-100">Student List</h2>
@@ -85,9 +94,9 @@ const StudentTable = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                 Engineer
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                 Actions
-              </th>
+              </th> */}
             </tr>
           </thead>
 
@@ -121,8 +130,18 @@ const StudentTable = () => {
             ))}
           </tbody>
         </table>
+       
       </div>
     </motion.div>
+    )
+  }
+   {
+    products.length<=0 && (
+<ImageBackground></ImageBackground>
+    )
+   }
+    
+    </>
   );
 };
 

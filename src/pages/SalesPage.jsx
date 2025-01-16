@@ -15,8 +15,10 @@ import SalesOverviewChart from "../components/sales/SalesOverviewChart";
 
 const SalesPage = () => {
 	return (
-		<div className='flex-1 overflow-auto relative z-10'>
-			<Header title='Abasent Dashboard' />
+<>
+
+<div className='flex-1 overflow-auto relative z-10'>
+			<Header title='Absent Dashboard' />
 			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
 				{/* SALES STATS */}
 				{/* <motion.div
@@ -40,12 +42,15 @@ const SalesPage = () => {
 					/>
 					<StatCard name='Sales Growth' icon={CreditCard} value={salesStats.salesGrowth} color='#EF4444' />
 				</motion.div> */}
-
+               
 				<SalesOverviewChart />
 
 				
 			</main>
 		</div>
+</>
+
+
 	);
 };
 export default SalesPage;

@@ -36,7 +36,7 @@ const StudentAbasentTable = () => {
       selectedDate < new Date("2025-01-06") ||
       dayOfWeek === 0
     ) {
-      toast.error("Try to access the future data !", {
+      toast.error("Data cannot be accessed on Sundays or future data! !", {
         style: {
           background: "#f44336",
           color: "#fff",

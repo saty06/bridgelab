@@ -29,9 +29,11 @@ const StudentPresentTable = () => {
       formattedDate = `${month}/${day}/${year}`;
       console.log(formattedDate); // Outputs: "17/01/2025"
     }
-
-    if (selectedDate > new Date()) {
-      toast.error("Try to access the future data !", {
+    const dayOfWeek = selectedDate.getDay();
+    if ( selectedDate > new Date() ||
+    selectedDate < new Date("2025-01-06") ||
+    dayOfWeek === 0) {
+      toast.error("Data cannot be accessed on Sundays or future data!", {
         style: {
           background: "#f44336",
           color: "#fff",

@@ -6,7 +6,7 @@ import ImageBackground from "../image/image";
 import {saveAs} from 'file-saver'
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { Toaster, toast } from 'react-hot-toast';
 
 
 const StudentPresentTable = () => {
@@ -30,7 +30,20 @@ const year = date.getFullYear();
  formattedDate = `${month}/${day}/${year}`;
 console.log(formattedDate); // Outputs: "17/01/2025"
   }
+     
 
+
+  if(selectedDate> new Date()){
+
+toast.error('Try to access the future data !', {
+        style: {
+          background: '#f44336',
+          color: '#fff',
+        },
+        icon: '❌',
+      });
+      return;
+  }
     try {
       const response = await axios.post(
         "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
@@ -43,9 +56,23 @@ console.log(formattedDate); // Outputs: "17/01/2025"
       setUsers(response?.data.flat(Infinity) || []);
      
  setFilteredUsers(response?.data.flat(Infinity))
+ toast.success('Data fetched successfully!', {
+  style: {
+    background: '#4caf50',
+    color: '#fff',
+  },
+  icon: '✅',
+});
 
     } catch (error) {
-      console.error("Error fetching student data:", error);
+     
+      toast.error('Failed to fetch data from server!', {
+        style: {
+          background: '#f44336',
+          color: '#fff',
+        },
+        icon: '❌',
+      });
     }
   };
 
@@ -98,6 +125,7 @@ console.log(" time to  take data  ", selectedDate)
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-100">Present Student {users.length} </h2>
         <h4 className="text-xl font-semibold text-gray-100">{new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric"})} </h4>

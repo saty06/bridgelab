@@ -6,6 +6,7 @@ import ImageBackground from "../image/image";
 import {saveAs} from 'file-saver'
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Toaster, toast } from 'react-hot-toast';
 const StudentAbasentTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -29,6 +30,18 @@ formattedDate = `${month}/${day}/${year}`;
 console.log(formattedDate); 
     setFinalDate(formattedDate)                   // Outputs: "17/01/2025"
     }
+
+    if(selectedDate> new Date()){
+
+      toast.error('Try to access the future data !', {
+              style: {
+                background: '#f44336',
+                color: '#fff',
+              },
+              icon: '❌',
+            });
+            return;
+        }
     try {
       const response = await axios.post(
         "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
@@ -41,9 +54,23 @@ console.log(formattedDate);
       setUsers(response?.data.flat(Infinity) || []);
      
  setFilteredUsers(response?.data.flat(Infinity))
+ toast.success('Data fetched successfully!', {
+  style: {
+    background: '#4caf50',
+    color: '#fff',
+  },
+  icon: '✅',
+});
 
     } catch (error) {
       console.error("Error fetching student data:", error);
+      toast.error('Failed to fetch data from server!', {
+        style: {
+          background: '#f44336',
+          color: '#fff',
+        },
+        icon: '❌',
+      });
     }
   };
 
@@ -88,11 +115,13 @@ console.log(formattedDate);
 <>{
   users!== null && users.length>0 && (
     <motion.div
+    
     className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 "
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.2 }}
   >
+     <Toaster position="top-right" reverseOrder={false} />
     <div className="flex justify-between items-center mb-6">
       <h2 className="text-xl font-semibold text-gray-100">Absent Student {users.length} </h2>
       <h4 className="text-xl font-semibold text-gray-100">{new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric"})} </h4>

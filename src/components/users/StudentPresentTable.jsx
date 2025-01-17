@@ -4,19 +4,37 @@ import { Search } from "lucide-react";
 import axios from "axios";
 import ImageBackground from "../image/image";
 import {saveAs} from 'file-saver'
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 
 const StudentPresentTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Fetch attendance data
   const fetchStudentData = async () => {
+let formattedDate= null ;
+  if(selectedDate){
+    const date = new Date(selectedDate); // Your input date
+
+// Extract day, month, and year
+const day = String(date.getDate()).padStart(2, "0");
+const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+const year = date.getFullYear();
+
+// Format the date
+ formattedDate = `${month}/${day}/${year}`;
+console.log(formattedDate); // Outputs: "17/01/2025"
+  }
+
     try {
       const response = await axios.post(
         "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
-        { check: true },
+        { check: true ,date:formattedDate },
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -65,7 +83,9 @@ const StudentPresentTable = () => {
 
   useEffect(() => {
     fetchStudentData();
-  }, []); // Added an empty dependency array to prevent infinite loop
+  },[selectedDate]); // Added an empty dependency array to prevent infinite loop
+ 
+console.log(" time to  take data  ", selectedDate)
 
   return (
 
@@ -79,8 +99,8 @@ const StudentPresentTable = () => {
       transition={{ delay: 0.2 }}
     >
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-100">Present Student </h2>
-        <h4 className="text-xl font-semibold text-gray-100">{new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: false})} </h4>
+        <h2 className="text-xl font-semibold text-gray-100">Present Student {users.length} </h2>
+        <h4 className="text-xl font-semibold text-gray-100">{new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric"})} </h4>
         <div className="relative">
           <input
             type="text"
@@ -97,6 +117,13 @@ const StudentPresentTable = () => {
               >
                 Download CSV
               </button>
+              <ReactDatePicker
+                            
+                            selected={selectedDate}
+                            onChange={(date) => setSelectedDate(date)}
+                            className="bg-gray-700 text-white rounded-lg px-4 py-2 mx-6"
+                            dateFormat="yyyy-MM-dd"
+                          />
         </div>
       </div>
     

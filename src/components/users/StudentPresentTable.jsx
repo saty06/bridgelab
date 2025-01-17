@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import axios from "axios";
 import ImageBackground from "../image/image";
+import {saveAs} from 'file-saver'
 
 
 const StudentPresentTable = () => {
@@ -40,6 +41,27 @@ const StudentPresentTable = () => {
     );
     setFilteredUsers(filtered);
   };
+  const downloadCSV = () => {
+    if (filteredUsers.length === 0) {
+      alert("No data available to download!");
+      return;
+    }
+
+    const headers = ["Name", "Email", "Attendance", "Date"];
+    const rows = filteredUsers.map((user) => [
+      user.name,
+      user.email,
+      "P", // Absent
+      new Date(user.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: false})
+     
+    ]);
+
+    const csvContent =
+      [headers, ...rows].map((row) => row.join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, "present_students.csv");
+  };
 
   useEffect(() => {
     fetchStudentData();
@@ -58,6 +80,7 @@ const StudentPresentTable = () => {
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-gray-100">Present Student </h2>
+        <h4 className="text-xl font-semibold text-gray-100">{new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: false})} </h4>
         <div className="relative">
           <input
             type="text"
@@ -67,6 +90,13 @@ const StudentPresentTable = () => {
             onChange={handleSearch}
           />
           <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          <button
+                className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onClick={downloadCSV}
+                style={{marginLeft:"30px"}}
+              >
+                Download CSV
+              </button>
         </div>
       </div>
     
@@ -122,7 +152,8 @@ const StudentPresentTable = () => {
     
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="text-sm text-gray-300">
-                    {user.today || "Not Available"}
+                     { new Date(user.created_at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", hour12: false})} 
+                    
                   </span>
                 </td>
               </motion.tr>

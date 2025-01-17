@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 
 import Sidebar from "./components/common/Sidebar";
 
@@ -22,6 +22,7 @@ function App() {
 				<Route path='/' element={<StudentTable />} />
 				<Route path='/present' element={<UsersPage />} />
 				<Route path='/absent' element={<SalesPage />} />
+				<Route path="*" element={<Navigate to="/" replace />} />
 			
 			</Routes>
 		</div>

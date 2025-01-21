@@ -36,7 +36,7 @@ const StudentAbasentTable = () => {
       selectedDate < new Date("2025-01-06") ||
       dayOfWeek === 0
     ) {
-      toast.error("Data cannot be accessed on Sundays or future data! !", {
+      toast.error("Data cannot be accessed on Sundays or future data! ", {
         style: {
           background: "#f44336",
           color: "#fff",
@@ -46,24 +46,51 @@ const StudentAbasentTable = () => {
       return;
     }
     try {
-      const response = await axios.post(
-        "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
-        { check: false, date: formattedDate },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log("Attendance response data:", response?.data);
-      setUsers(response?.data.flat(Infinity) || []);
 
-      setFilteredUsers(response?.data.flat(Infinity));
-      toast.success("Data fetched successfully!", {
-        style: {
-          background: "#4caf50",
-          color: "#fff",
-        },
-        icon: "✅",
-      });
+      if(localStorage.getItem('collegeName')==='Technocrats'){
+        const response = await axios.post(
+          "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
+          { check: false, date: formattedDate },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        console.log("Attendance response data:", response?.data);
+        setUsers(response?.data.flat(Infinity) || []);
+  
+        setFilteredUsers(response?.data.flat(Infinity));
+        toast.success("Data fetched successfully!", {
+          style: {
+            background: "#4caf50",
+            color: "#fff",
+          },
+          icon: "✅",
+        });
+
+
+      }
+      else if(localStorage.getItem('collegeName')==='Mathura'){
+        const response = await axios.post(
+          "https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/studentattendance",
+          { check: false, date: formattedDate },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        console.log("Attendance  Mathura ", response?.data);
+        setUsers(response?.data.flat(Infinity) || []);
+  
+        setFilteredUsers(response?.data.flat(Infinity));
+        toast.success("Data fetched successfully!", {
+          style: {
+            background: "#4caf50",
+            color: "#fff",
+          },
+          icon: "✅",
+        });
+        
+      }
     } catch (error) {
       console.error("Error fetching student data:", error);
       toast.error("Failed to fetch data from server!", {
@@ -127,15 +154,15 @@ const StudentAbasentTable = () => {
           <Toaster position="top-right" reverseOrder={false} />
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold text-gray-100">
-              Absent Student {users.length}{" "}
-            </h2>
-            <h4 className="text-xl font-semibold text-gray-100">
-              {new Date().toLocaleDateString("en-US", {
+            Total Students Absent on {new Date().toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
               })}{" "}
-            </h4>
+            </h2>
+            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
+            {users.length}
+                          </div>
             <div className="relative">
               <input
                 type="text"

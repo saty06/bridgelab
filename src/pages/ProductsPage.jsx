@@ -1,95 +1,162 @@
 import { motion } from "framer-motion";
-
 import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
-import{useEffect, useState} from 'react'
+import { useEffect, useState } from "react";
 import axios from "axios";
-
 import { AlertTriangle, Package, TrendingUp } from "lucide-react";
-// import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-// import SalesTrendChart from "../components/products/SalesTrendChart";
 import StudentTable from "../components/products/StudentTable";
 
+
 const ProductsPage = () => {
-	const [totapresentlStudent, setpresentTotalStudent] = useState(null);
-	const [totalAbasent, setTotalAbasent] = useState(null);
-  const[totalStudent, setTotalStudent] = useState(null);
-  
-	const totalPresetStudent = async () => {
+  const [totalPresentStudent, setTotalPresentStudent] = useState(null);
+  const [totalAbsentStudent, setTotalAbsentStudent] = useState(null);
+  const [totalStudent, setTotalStudent] = useState(null);
+  const [filterOption, setFilterOption] = useState(null);
+  const [college, setCollege] = useState(null);
+
+  const fetchTotalPresentStudent = async () => {
     try {
+      const apiUrl =
+        filterOption === "Mathura"
+          ? "https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/studentattendance"
+          : "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail";
+
       const response = await axios.post(
-        "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
+        apiUrl,
         { check: true },
         {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log("Attendance response data:", response?.data);
-      setpresentTotalStudent(response?.data?.length);
+      setTotalPresentStudent(response?.data?.length || 0);
     } catch (error) {
-      console.error("Error fetching student data:", error);
+      console.error("Error fetching present students:", error);
     }
   };
-  const totalAbasentStudent = async () => {
+
+  const fetchTotalAbsentStudent = async () => {
     try {
+      const apiUrl =
+        filterOption === "Mathura"
+          ? "https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/studentattendance"
+          : "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail";
+
       const response = await axios.post(
-        "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
+        apiUrl,
         { check: false },
         {
           headers: { "Content-Type": "application/json" },
         }
       );
-      console.log("Attendance response data:", response?.data);
-      setTotalAbasent(response?.data?.length);
+      setTotalAbsentStudent(response?.data?.length || 0);
     } catch (error) {
-      console.error("Error fetching student data:", error);
+      console.error("Error fetching absent students:", error);
     }
   };
-  const handleFetchTotalStudent = async () => {
+
+  const fetchTotalStudent = async () => {
     try {
-      const response = await axios.get(
-        "https://x8ki-letl-twmt.n7.xano.io/api:ufB-AVZm/studentdata",
-        { headers: { "Content-Type": "application/json" } }
-      );
-      
-    // Initialize filtered data
-    setTotalStudent(response?.data?.length);
-      console.log(response?.data);
-      console.log(" smn")
+      const apiUrl =
+        filterOption === "Mathura"
+          ? "https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/mathurastudent"
+          : "https://x8ki-letl-twmt.n7.xano.io/api:ufB-AVZm/studentdata";
+
+      const response = await axios.get(apiUrl, {
+        headers: { "Content-Type": "application/json" },
+      });
+      setTotalStudent(response?.data?.length || 0);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching total students:", error);
     }
   };
-  
-	useEffect(() => {
-  totalPresetStudent();
-  totalAbasentStudent()
-  handleFetchTotalStudent();
-	}, []);
-	return (
-		<div className='flex-1 overflow-auto relative z-10'>
-			<Header title=' CG Technocrat Bhopal Learners Dashboard' />
-      
 
-			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
-				{/* STATS */}
-				<motion.div
-					className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8'
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 1 }}
-				>
-					<StatCard name='Total Present Student ' icon={Package} value={ totapresentlStudent!=null ? totapresentlStudent:0} color='#6366F1' />
-					<StatCard name='Total Absent Student ' icon={TrendingUp} value={totalAbasent!=null ? totalAbasent: 0} color='#10B981' />
-					<StatCard name='Total Student' icon={AlertTriangle} value={totalStudent!=null ? totalStudent: 0} color='#F59E0B' />
-					
-				</motion.div>
+  const handleFilterChange = (filter) => {
+    localStorage.setItem("collegeName", filter);
+    setFilterOption(filter);
+    setCollege(filter);
+  };
 
-				<StudentTable />
+  useEffect(() => {
+    if (filterOption) {
+      fetchTotalPresentStudent();
+      fetchTotalAbsentStudent();
+      fetchTotalStudent();
+    }
+  }, [filterOption]);
 
-				
-			</main>
-		</div>
-	);
+  return (
+    <div className="flex-1 overflow-auto relative z-10">
+      <Header
+        title={
+          college === "Technocrats"
+            ? "CG Technocrat Bhopal Learners Dashboard"
+            : college === "Mathura"
+            ? "Mathura Learners Dashboard"
+            : "Choose COE Location"
+        }
+      />
+      <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
+        {/* Filter Buttons */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-gray-100">
+           
+          </h2>
+          <div className="flex space-x-4">
+            <button
+              onClick={() => handleFilterChange("Technocrats")}
+              className={`${
+                filterOption === "Technocrats" ? "bg-blue-600" : "bg-gray-700"
+              } text-white rounded-lg px-4 py-2`}
+            >
+             Technocrats Bhopal
+            </button>
+            <button
+              onClick={() => handleFilterChange("Mathura")}
+              className={`${
+                filterOption === "Mathura" ? "bg-blue-600" : "bg-gray-700"
+              } text-white rounded-lg px-4 py-2`}
+            >
+          GLA Mathura
+            </button>
+          </div>
+        </div>
+
+        {/* Stats */}
+        {filterOption && totalStudent !== null ? (
+          <motion.div
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <StatCard
+              name="Total Present Students"
+              icon={Package}
+              value={totalPresentStudent || 0}
+              color="#6366F1"
+            />
+            <StatCard
+              name="Total Absent Students"
+              icon={TrendingUp}
+              value={totalAbsentStudent || 0}
+              color="#10B981"
+            />
+            <StatCard
+              name="Total Students"
+              icon={AlertTriangle}
+              value={totalStudent || 0}
+              color="#F59E0B"
+            />
+          </motion.div>
+        ) : (
+          ""
+        )}
+
+        {/* Student Table */}
+        <StudentTable compushName={filterOption} />
+      </main>
+    </div>
+  );
 };
+
 export default ProductsPage;

@@ -6,6 +6,7 @@ import Sidebar from "./components/common/Sidebar";
 import StudentTable from "./pages/ProductsPage"
 import UsersPage from "./pages/UsersPage";
 import SalesPage from "./pages/SalesPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 
 function App() {
 	return (
@@ -22,7 +23,9 @@ function App() {
 				<Route path='/' element={<StudentTable />} />
 				<Route path='/present' element={<UsersPage />} />
 				<Route path='/absent' element={<SalesPage />} />
+				<Route path='/analytics' element={<AnalyticsPage />} />
 				<Route path="*" element={<Navigate to="/" replace />} />
+
 			
 			</Routes>
 		</div>

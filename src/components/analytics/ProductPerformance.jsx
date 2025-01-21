@@ -1,6 +1,7 @@
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { motion } from "framer-motion";
 
+
 const productPerformanceData = [
 	{ name: "Product A", sales: 4000, revenue: 2400, profit: 2400 },
 	{ name: "Product B", sales: 3000, revenue: 1398, profit: 2210 },
@@ -10,6 +11,7 @@ const productPerformanceData = [
 ];
 
 const ProductPerformance = () => {
+
 	return (
 		<motion.div
 			className='bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg shadow-lg rounded-xl p-6 border border-gray-700'

@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import {useEffect} from 'react'
 
 const SIDEBAR_ITEMS = [
 //   {
@@ -19,12 +20,24 @@ const SIDEBAR_ITEMS = [
   { name: "Student", icon: ShoppingBag, color: "#8B5CF6", href: "/" },
   { name: "Present", icon: Users, color: "#10B981", href: "/present" },
   { name: "Absent", icon: Users, color: "#F59E0B", href: "/absent" },
+  {
+    name: "Analytics", icon: Users, color: "#F59E0B", href: "/analytics"
+  }
   
 ];
 
+
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
+  const[college, setCollege]  = useState(null)
+  useEffect(()=>{
+    const collegeName = localStorage.getItem('collegeName')
+    setCollege(collegeName);
+    
+  
+    
+  },[])
+console.log(college)
   return (
     <motion.div
       className={`relative z-10 transition-all duration-300 ease-in-out flex-shrink-0 ${
@@ -43,7 +56,9 @@ const Sidebar = () => {
         </motion.button>
 
         <nav className="mt-8 flex-grow">
-          {SIDEBAR_ITEMS.map((item) => (
+           
+
+          { SIDEBAR_ITEMS.map((item) => (
             <Link key={item.href} to={item.href}>
               <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors mb-2">
                 <item.icon

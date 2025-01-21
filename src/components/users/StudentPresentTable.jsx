@@ -43,24 +43,52 @@ const StudentPresentTable = () => {
       return;
     }
     try {
-      const response = await axios.post(
-        "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
-        { check: true, date: formattedDate },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      console.log("Attendance response data:", response?.data);
-      setUsers(response?.data.flat(Infinity) || []);
 
-      setFilteredUsers(response?.data.flat(Infinity));
-      toast.success("Data fetched successfully!", {
-        style: {
-          background: "#4caf50",
-          color: "#fff",
-        },
-        icon: "✅",
-      });
+      if(localStorage.getItem('collegeName')==='Technocrats'){
+        const response = await axios.post(
+          "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
+          { check: true, date: formattedDate },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        console.log("Attendance response data:", response?.data);
+        setUsers(response?.data.flat(Infinity) || []);
+  
+        setFilteredUsers(response?.data.flat(Infinity));
+        toast.success("Data fetched successfully!", {
+          style: {
+            background: "#4caf50",
+            color: "#fff",
+          },
+          icon: "✅",
+        });
+
+      }
+      else if(localStorage.getItem('collegeName')==='Mathura'){
+        const response = await axios.post(
+          "https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/studentattendance",
+          { check: true, date: formattedDate },
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        console.log("Attendance response data:", response?.data);
+        setUsers(response?.data.flat(Infinity) || []);
+  
+        setFilteredUsers(response?.data.flat(Infinity));
+        toast.success("Data fetched successfully!", {
+          style: {
+            background: "#4caf50",
+            color: "#fff",
+          },
+          icon: "✅",
+        });
+        
+      }
+     
+     
     } catch (error) {
       toast.error("Failed to fetch data from server!", {
         style: {
@@ -124,44 +152,45 @@ const StudentPresentTable = () => {
           transition={{ delay: 0.2 }}
         >
           <Toaster position="top-right" reverseOrder={false} />
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-100">
-              Present Student {users.length}{" "}
-            </h2>
-            <h4 className="text-xl font-semibold text-gray-100">
-              {new Date().toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}{" "}
-            </h4>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search users..."
-                className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-              <Search
-                className="absolute left-3 top-2.5 text-gray-400"
-                size={18}
-              />
-              <button
-                className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onClick={downloadCSV}
-                style={{ marginLeft: "30px" }}
-              >
-                Download CSV
-              </button>
-              <ReactDatePicker
-                selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
-                className="bg-gray-700 text-white rounded-lg px-4 py-2 mx-6"
-                dateFormat="yyyy-MM-dd"
-              />
-            </div>
-          </div>
+         <div className="flex justify-between items-center mb-6">
+                     <h2 className="text-xl font-semibold text-gray-100">
+                     Total Students Present on on {new Date().toLocaleDateString("en-US", {
+                         year: "numeric",
+                         month: "short",
+                         day: "numeric",
+                       })}{" "}
+                     </h2>
+                     <div className=" h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
+                     {users.length}
+                                   </div>
+                     <div className="relative">
+                       <input
+                         type="text"
+                         placeholder="Search users..."
+                         className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                         value={searchTerm}
+                         onChange={handleSearch}
+                       />
+                       <Search
+                         className="absolute left-3 top-2.5 text-gray-400"
+                         size={18}
+                       />
+                       <button
+                         className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                         onClick={downloadCSV}
+                         style={{ marginLeft: "30px" }}
+                       >
+                         Download CSV
+                       </button>
+                       <ReactDatePicker
+                         selected={selectedDate}
+                         onChange={(date) => setSelectedDate(date)}
+                         className="bg-gray-700 text-white rounded-lg px-4 py-2 mx-6 items-center justify-center"
+                         dateFormat="yyyy-MM-dd"
+                       />
+                     </div>
+                   </div>
+         
 
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-700">
@@ -183,7 +212,7 @@ const StudentPresentTable = () => {
               </thead>
 
               <tbody className="divide-y divide-gray-700">
-                {filteredUsers.map((user, index) => (
+                {filteredUsers?.map((user, index) => (
                   <motion.tr
                     key={index}
                     initial={{ opacity: 0 }}

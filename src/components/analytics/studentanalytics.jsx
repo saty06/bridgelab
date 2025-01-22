@@ -18,18 +18,24 @@ const StudentAnalytics = () => {
   const generateDateRange = (start, end) => {
     const dates = [];
     const current = new Date(start);
-
+  
     while (current <= end) {
-      if (current.getDay() !== 0) {
-        dates.push({
-          date: current.toISOString().split("T")[0],
-          day: current.toLocaleDateString("en-US", { weekday: "long" }),
-        });
+      if (current.getDay() !== 0) { // Exclude Sundays
+        const day = String(current.getDate()).padStart(2, "0");
+        const month = String(current.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+        const year = current.getFullYear();
+  
+        // Format the date as MM/DD/YYYY
+        const formattedDate = `${month}/${day}/${year}`;
+        dates.push(formattedDate);
       }
+      // Increment the date
       current.setDate(current.getDate() + 1);
     }
+  
     return dates;
   };
+  
 
   // Fetch student data from API
   const fetchStudentData = async () => {
@@ -46,12 +52,12 @@ const StudentAnalytics = () => {
           )
         : generateDateRange(startDate, endDate);
 
-    if (startDate && startDate < new Date("2025-01-06")) {
+    if (filterOption === "dateRange" && startDate < new Date("2025-01-06")) {
       toast.error("Data is not accessible before 2025-01-06.");
       return;
     }
 
-    if (endDate && endDate > new Date()) {
+    if (filterOption === "dateRange" && endDate > new Date()) {
       toast.error("Future data is not accessible.");
       return;
     }
@@ -60,41 +66,32 @@ const StudentAnalytics = () => {
       toast.error("Start date cannot be later than the end date.");
       return;
     }
-
+ console.log(" data range range  ", dateRange)
     try {
-      const results = await Promise.allSettled(
-        dateRange.map(async (date) => {
-          const response = await axios.post(
-            "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
-            { check: true, date: date.date },
-            { headers: { "Content-Type": "application/json" } }
-          );
-          return response?.data.flat(Infinity).length || 0;
-        })
-      );
-
-      const processedData = results.map((result, index) => {
+      const apiUrl ="https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/bhopalstudentbulkdata";
         
-        if (result.status === "fulfilled") {
-          const studentCount = result.value;
-          const totalStudents = 239; // Replace with a dynamic value
-          return {
-            day: dateRange[index].day,
-            totalStudents,
-            presentStudents: studentCount,
-            absentStudents: totalStudents - studentCount,
-          };
-        }
-        return null;
-      }).filter(Boolean);
 
+      const response = await axios.post(
+        apiUrl,
+        { date: dateRange },
+        { headers: { "Content-Type": "application/json" } }
+      );
+ console.log(" response data ", response)
+      const processedData = response.data.map((result, index) => {
+        const studentCount = result || 0; // Adjust based on API response structure
+        const totalStudents = 239; // Replace with a dynamic value if needed
+        return {
+          day: dateRange[index] || "Unknown Day",
+          totalStudents,
+          presentStudents: studentCount,
+          absentStudents: totalStudents - studentCount,
+        };
+      });
+ console.log(response)
       setChartData(processedData);
       setShowTable(processedData);
-
-      toast.success("Data fetched successfully!");
     } catch (error) {
-      console.error("Error fetching data:", error);
-      toast.error("Failed to fetch data.");
+      console.error("Error fetching or processing student data:", error);
     }
   };
 
@@ -171,7 +168,7 @@ const StudentAnalytics = () => {
           <table className="table-auto w-full text-left text-gray-200">
             <thead>
               <tr>
-                <th className="px-4 py-2">Day</th>
+                <th className="px-4 py-2">Date</th>
                 <th className="px-4 py-2">Total Students</th>
                 <th className="px-4 py-2">Present</th>
                 <th className="px-4 py-2">Absent</th>

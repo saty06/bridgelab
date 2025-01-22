@@ -91,7 +91,7 @@ const ProductsPage = () => {
           college === "Technocrats"
             ? "CG Technocrat Bhopal Learners Dashboard"
             : college === "Mathura"
-            ? "Mathura Learners Dashboard"
+            ? "GLA Mathura Learners Dashboard"
             : "Choose COE Location"
         }
       />

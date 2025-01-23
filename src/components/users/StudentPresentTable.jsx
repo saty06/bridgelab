@@ -154,7 +154,7 @@ const StudentPresentTable = () => {
           <Toaster position="top-right" reverseOrder={false} />
          <div className="flex justify-between items-center mb-6">
                      <h2 className="text-xl font-semibold text-gray-100">
-                     Total Students Present on {new Date().toLocaleDateString("en-US", {
+                     Total Students Present on {new Date(selectedDate).toLocaleDateString("en-US", {
                          year: "numeric",
                          month: "short",
                          day: "numeric",

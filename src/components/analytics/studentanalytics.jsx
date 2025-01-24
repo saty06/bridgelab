@@ -76,7 +76,7 @@ const StudentAnalytics = () => {
         { date: dateRange },
         { headers: { "Content-Type": "application/json" } }
       );
- console.log(" response data ", response)
+ console.log(" response data.............. ", response)
       const processedData = response.data.map((result, index) => {
         const studentCount = result || 0; // Adjust based on API response structure
         const totalStudents = 239; // Replace with a dynamic value if needed

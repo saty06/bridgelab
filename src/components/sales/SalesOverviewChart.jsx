@@ -56,7 +56,7 @@ const StudentAbasentTable = () => {
           }
         );
         console.log("Attendance response data:", response?.data);
-        setUsers(response?.data.flat(Infinity) || []);
+        setUsers(response?.data.flat(Infinity));
   
         setFilteredUsers(response?.data.flat(Infinity));
         toast.success("Data fetched successfully!", {
@@ -146,48 +146,51 @@ const StudentAbasentTable = () => {
     <>
       {users !== null && users.length > 0 && (
         <motion.div
-          className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
+          className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 "
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <Toaster position="top-right" reverseOrder={false} />
-          <div className="flex flex-col lg:flex-row justify-between items-center mb-6 space-y-4 lg:space-y-0">
-            <h2 className="text-xl font-semibold text-gray-100 text-center lg:text-left">
-              Total Students Absent on{" "}
-              {new Date(selectedDate).toLocaleDateString("en-US", {
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold text-gray-100">
+            Total Students Absent on {new Date(selectedDate).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
               })}{" "}
             </h2>
-            <div className="flex items-center space-x-4">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-                {users.length}
-              </div>
+            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
+            {users.length}
+                          </div>
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search users..."
-                className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full lg:w-auto"
+                className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={searchTerm}
                 onChange={handleSearch}
               />
-             
+              <Search
+                className="absolute left-3 top-2.5 text-gray-400"
+                size={18}
+              />
               <button
-                className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onClick={downloadCSV}
+                style={{ marginLeft: "30px" }}
               >
                 Download CSV
               </button>
               <ReactDatePicker
                 selected={selectedDate}
                 onChange={(date) => setSelectedDate(date)}
-                className="bg-gray-700 text-white rounded-lg px-4 py-2"
+                className="bg-gray-700 text-white rounded-lg px-4 py-2 mx-6 items-center justify-center"
                 dateFormat="yyyy-MM-dd"
               />
             </div>
           </div>
-  
+
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-700">
               <thead>
@@ -212,7 +215,7 @@ const StudentAbasentTable = () => {
                   </th>
                 </tr>
               </thead>
-  
+
               <tbody className="divide-y divide-gray-700">
                 {filteredUsers.map((user, index) => (
                   <motion.tr
@@ -235,19 +238,23 @@ const StudentAbasentTable = () => {
                         </div>
                       </div>
                     </td>
-  
+
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-300">{user.Email_Id}</div>
+                      <div className="text-sm text-gray-300">
+                        {user.Email_Id}
+                      </div>
                     </td>
-  
+
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
                         A
                       </span>
                     </td>
-  
+
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-300">{user.Cohort}</span>
+                      <span className="text-sm text-gray-300">
+                        {user.Cohort}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm text-gray-300">
@@ -264,23 +271,23 @@ const StudentAbasentTable = () => {
           </div>
         </motion.div>
       )}
-      {(users == null || users.length <= 0) && (
-           <div>
-           <Toaster position="top-right" reverseOrder={false} />
-           <div style={{ margin: "30px", marginLeft: "300px" }}>
-             <ReactDatePicker
-               selected={selectedDate}
-               onChange={(date) => setSelectedDate(date)}
-               className="bg-gray-700 text-white rounded-lg px-4 py-2 mx-6 items-center justify-center"
-               dateFormat="yyyy-MM-dd"
-             />
-           </div>
-           <ImageBackground></ImageBackground>
-         </div>
-      )}
+      {users == null ||
+        (users.length <= 0 && (
+          <div>
+            <Toaster position="top-right" reverseOrder={false} />
+            <div style={{ margin: "30px", marginLeft: "300px" }}>
+              <ReactDatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                className="bg-gray-700 text-white rounded-lg px-4 py-2 mx-6 items-center justify-center"
+                dateFormat="yyyy-MM-dd"
+              />
+            </div>
+            <ImageBackground></ImageBackground>
+          </div>
+        ))}
     </>
-  );
-  
+  )
 };
 
 export default StudentAbasentTable;

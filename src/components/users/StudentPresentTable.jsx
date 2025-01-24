@@ -13,6 +13,7 @@ const StudentPresentTable = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const[totalStudent, setTotalStudent] = useState(null)
 
   // Fetch attendance data
   const fetchStudentData = async () => {
@@ -52,7 +53,9 @@ const StudentPresentTable = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
-        console.log("Attendance response data:", response?.data);
+        console.log("Attendance response data:......", response?.data.length);
+        setTotalStudent(response?.data?.length)
+        
         setUsers(response?.data.flat(Infinity) || []);
   
         setFilteredUsers(response?.data.flat(Infinity));
@@ -75,6 +78,7 @@ const StudentPresentTable = () => {
         );
 
         console.log("Attendance response data:", response?.data);
+        setTotalStudent(response?.data?.length)
         setUsers(response?.data.flat(Infinity) || []);
   
         setFilteredUsers(response?.data.flat(Infinity));
@@ -161,7 +165,7 @@ const StudentPresentTable = () => {
                        })}{" "}
                      </h2>
                      <div className=" h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-                     {users.length}
+                     {totalStudent}
                                    </div>
                      <div className="relative">
                        <input

@@ -3,15 +3,18 @@ import { Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ImageBackground from "../image/image";
+import { Oval  } from "react-loader-spinner";
 
 const StudentTable = ({ compushName }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [collegeName, setCollegeName] = useState(compushName);
+  const [loading, setLoading] = useState(false);
 
   // Fetch data from the backend
   const handleFetchData = async (college) => {
+    setLoading(true);
     try {
       let response;
       if (college === "Technocrats") {
@@ -31,6 +34,9 @@ const StudentTable = ({ compushName }) => {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    }
+    finally{
+      setLoading(false);
     }
   };
 
@@ -64,6 +70,20 @@ const StudentTable = ({ compushName }) => {
           transition={{ delay: 0.2 }}
         >
           <div className="flex justify-between items-center mb-6">
+          {loading && (
+  <div className="flex justify-center items-center py-4">
+    <Oval
+      height={50}
+      width={50}
+      color="#4caf50"
+      ariaLabel="loading"
+      secondaryColor="#c0e57b"
+      strokeWidth={2}
+      strokeWidthSecondary={2}
+    />
+  </div>
+)}
+
             <h2 className="text-xl font-semibold text-gray-100">Student List</h2>
             <div className="relative">
               <input

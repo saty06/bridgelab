@@ -27,7 +27,7 @@ const SIDEBAR_ITEMS = [
 ];
 
 
-const Sidebar = () => {
+const Sidebar = (z) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const[college, setCollege]  = useState(null)
   useEffect(()=>{

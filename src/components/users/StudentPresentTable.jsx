@@ -6,6 +6,7 @@ import { saveAs } from "file-saver";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Toaster, toast } from "react-hot-toast";
+import { Oval  } from "react-loader-spinner";
 
 const StudentPresentTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,9 +14,11 @@ const StudentPresentTable = () => {
   const [users, setUsers] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalStudent, setTotalStudent] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // Fetch attendance data
   const fetchStudentData = async () => {
+    setLoading(true)
     let formattedDate = null;
     if (selectedDate) {
       const date = new Date(selectedDate); // Your input date
@@ -97,6 +100,10 @@ const StudentPresentTable = () => {
         icon: "❌",
       });
     }
+    finally{
+      setLoading(false)
+
+    }
   };
 
   // Handle search input
@@ -151,6 +158,17 @@ const StudentPresentTable = () => {
           transition={{ delay: 0.2 }}
         >
           <Toaster position="top-right" reverseOrder={false} />
+          {loading && (
+        <div className="flex justify-center items-center py-4">
+          {/* Replace with your preferred spinner */}
+          <Oval 
+            height="50"
+            width="50"
+            color="#4caf50"
+            ariaLabel="loading-indicator"
+          />
+        </div>
+      )}
           <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
             <h2 className="text-lg md:text-xl font-semibold text-gray-100 text-center md:text-left">
               Total Students Present on{" "}

@@ -5,6 +5,7 @@ import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import ImageBackground from "../image/image";
+import { Oval } from "react-loader-spinner";
 
 const StudentAnalytics = () => {
   const [startDate, setStartDate] = useState(null);
@@ -12,6 +13,7 @@ const StudentAnalytics = () => {
   const [chartData, setChartData] = useState([]);
   const [showTable, setShowTable] = useState(null);
   const [filterOption, setFilterOption] = useState("weekly");
+  const [loading, setLoading] = useState(false);
   console.log(chartData)
 
   // Helper function to generate a date range excluding Sundays
@@ -39,6 +41,7 @@ const StudentAnalytics = () => {
 
   // Fetch student data from API
   const fetchStudentData = async () => {
+    setLoading(true)
     if (filterOption === "dateRange" && (!startDate || !endDate)) {
       toast.error("Please select both start and end dates.");
       return;
@@ -93,6 +96,9 @@ const StudentAnalytics = () => {
     } catch (error) {
       console.error("Error fetching or processing student data:", error);
     }
+    finally{
+      setLoading(false)
+    }
   };
 
   useEffect(() => {
@@ -116,6 +122,20 @@ const StudentAnalytics = () => {
         transition={{ delay: 0.2 }}
       >
         <Toaster position="top-right" />
+        {loading && (
+  <div className="flex justify-center items-center py-4">
+    <Oval
+      height={50}
+      width={50}
+      color="#4caf50"
+      ariaLabel="loading"
+      secondaryColor="#c0e57b"
+      strokeWidth={2}
+      strokeWidthSecondary={2}
+    />
+  </div>
+)}
+
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-gray-100">
             Student Attendance

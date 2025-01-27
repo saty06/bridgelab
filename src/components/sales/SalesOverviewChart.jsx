@@ -7,15 +7,20 @@ import { saveAs } from "file-saver";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Toaster, toast } from "react-hot-toast";
+import { Oval } from "react-loader-spinner";
+
 const StudentAbasentTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [finalDate, setFinalDate] = useState();
+  const [loading, setLoading] = useState(false);
+  
 
   // Fetch attendance data
   const fetchStudentData = async () => {
+    setLoading(true);
     let formattedDate;
     if (selectedDate) {
       const date = new Date(selectedDate); // Your input date
@@ -96,6 +101,9 @@ const StudentAbasentTable = () => {
         icon: "❌",
       });
     }
+    finally{
+      setLoading(false)
+    }
   };
 
   // Handle search input
@@ -147,6 +155,20 @@ const StudentAbasentTable = () => {
           transition={{ delay: 0.2 }}
         >
           <Toaster position="top-right" reverseOrder={false} />
+          {loading && (
+  <div className="flex justify-center items-center py-4">
+    <Oval
+      height={50}
+      width={50}
+      color="#4caf50"
+      ariaLabel="loading"
+      secondaryColor="#c0e57b"
+      strokeWidth={2}
+      strokeWidthSecondary={2}
+    />
+  </div>
+)}
+
           <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
             <h2 className="text-xl font-semibold text-gray-100">
               Total Students Absent on{" "}

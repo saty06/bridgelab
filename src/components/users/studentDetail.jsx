@@ -7,24 +7,14 @@ import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Toaster, toast } from "react-hot-toast";
 import { Oval  } from "react-loader-spinner";
-import { useNavigate } from "react-router-dom";
-import './student.css'
 
-const StudentPresentTable = () => {
+const StudentDetail = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [users, setUsers] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalStudent, setTotalStudent] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-
-  // const StudentDetail=(value)=>{
-  //   navigate(`/student/profile/:${value}`)
-
-
-  // }
 
   // Fetch attendance data
   const fetchStudentData = async () => {
@@ -66,7 +56,7 @@ const StudentPresentTable = () => {
             headers: { "Content-Type": "application/json" },
           }
         );
-        console.log("Attendance response data:......", response?.data.flat(Infinity));
+        console.log("Attendance response data:......", response?.data.length);
         setTotalStudent(response?.data?.length);
 
         setUsers(response?.data.flat(Infinity) || []);
@@ -123,8 +113,7 @@ const StudentPresentTable = () => {
     const filtered = users.filter(
       (user) =>
         user.name.toLowerCase().includes(term) ||
-        user.email.toLowerCase().includes(term) || user.capgemini_student_cohort.toLowerCase().includes(term)
-        || user.capgemini_Bl_Engineer.toLowerCase().includes(term)
+        user.email.toLowerCase().includes(term)
     );
     setFilteredUsers(filtered);
   };
@@ -155,7 +144,7 @@ const StudentPresentTable = () => {
 
   useEffect(() => {
     fetchStudentData();
-  }, [selectedDate, navigate]); // Added an empty dependency array to prevent infinite loop
+  }, [selectedDate]); // Added an empty dependency array to prevent infinite loop
 
   console.log(" time to  take data  ", selectedDate);
 
@@ -163,16 +152,14 @@ const StudentPresentTable = () => {
     <>
       {users.length > 0 && (
         <motion.div
-          className="bg-gray-800 bg-opacity-100 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 overflow-x-auto"
+          className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-       
-          
         >
           <Toaster position="top-right" reverseOrder={false} />
           {loading && (
-        <div className="flex justify-center items-center py-6">
+        <div className="flex justify-center items-center py-4">
           {/* Replace with your preferred spinner */}
           <Oval 
             height="50"
@@ -219,8 +206,8 @@ const StudentPresentTable = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-700  ">
-              <thead className="scrollable-container">
+            <table className="min-w-full divide-y divide-gray-700">
+              <thead>
                 <tr>
                   <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Name
@@ -234,20 +221,6 @@ const StudentPresentTable = () => {
                   <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Date
                   </th>
-
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  Cohort	
-                  </th>
-
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  Lab	
-                  </th>
-
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  BL_Engineer		
-                  </th>
-
-
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -258,15 +231,11 @@ const StudentPresentTable = () => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap"   >
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold"  >
-                           <button key={user.email} >
-
-                           {user.name.charAt(0)}
-                           </button>
-                           
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
+                            {user.name.charAt(0)}
                           </div>
                         </div>
                         <div className="ml-4">
@@ -292,23 +261,6 @@ const StudentPresentTable = () => {
                         })}
                       </span>
                     </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
-                        {user.capgemini_student_cohort || "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
-                        {user.capgemini_lab|| "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      
-                        {user.capgemini_Bl_Engineer|| "N/A"}
-                    
-                    </td>
-                   
-
                   </motion.tr>
                 ))}
               </tbody>
@@ -334,4 +286,4 @@ const StudentPresentTable = () => {
   );
 };
 
-export default StudentPresentTable;
+export default StudentDetail;

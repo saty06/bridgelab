@@ -6,6 +6,7 @@ import ProductsPage from "./pages/ProductsPage";
 import UsersPage from "./pages/UsersPage";
 import SalesPage from "./pages/SalesPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
+import StudentDetailPage from "./pages/studentDetailPage";
 
 function App() {
   const [chooseLocation, setChooseLocation] = useState(null);
@@ -40,6 +41,7 @@ function App() {
             <Route path="/present" element={<UsersPage />} />
             <Route path="/absent" element={<SalesPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/student/profile/:id" element={<StudentDetailPage />} />
           </>
         )}
 

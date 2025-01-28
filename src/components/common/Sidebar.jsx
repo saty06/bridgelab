@@ -27,7 +27,7 @@ const SIDEBAR_ITEMS = [
 ];
 
 
-const Sidebar = (z) => {
+const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const[college, setCollege]  = useState(null)
   useEffect(()=>{
@@ -56,6 +56,7 @@ console.log(college)
         </motion.button>
 
         <nav className="mt-8 flex-grow">
+         
            
 
           { SIDEBAR_ITEMS.map((item) => (

@@ -1,0 +1,7 @@
+.scrollable-container {
+    max-height: 50vh; /* Height adjusts with viewport */
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: #4caf50 #1e1e1e;
+    -webkit-overflow-scrolling: touch; /* Enables smooth scrolling on touch devices */
+  }

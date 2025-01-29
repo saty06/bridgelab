@@ -225,10 +225,7 @@ setShowTable(processedData);
   }
 
   }
-  else{
-    toast.error(" Choose any one Bhopal Or Mathura")
 
-  }
 
 
 

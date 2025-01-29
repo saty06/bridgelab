@@ -8,7 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { Toaster, toast } from "react-hot-toast";
 import { Oval  } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
-import './student.css'
+import './style.css'
 
 const StudentPresentTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -134,7 +134,7 @@ const StudentPresentTable = () => {
       return;
     }
 
-    const headers = ["Name", "Email", "Attendance", "Date"];
+    const headers = ["Name", "Email", "Attendance", "Date", "Cohort", "Tech Stack", " BL_Engineer"];
     const rows = filteredUsers.map((user) => [
       user.name,
       user.email,
@@ -143,6 +143,10 @@ const StudentPresentTable = () => {
         timeZone: "Asia/Kolkata",
         hour12: false,
       }),
+      user.capgemini_student_cohort,
+      user.capgemini_lab,
+      user.capgemini_Bl_Engineer
+
     ]);
 
     const csvContent = [headers, ...rows]
@@ -218,7 +222,7 @@ const StudentPresentTable = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto custom-scrollbar">
             <table className="min-w-full divide-y divide-gray-700  ">
               <thead className="scrollable-container">
                 <tr>
@@ -240,7 +244,7 @@ const StudentPresentTable = () => {
                   </th>
 
                   <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  Lab	
+                  Tech Stack	
                   </th>
 
                   <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">

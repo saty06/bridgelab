@@ -14,6 +14,7 @@ const StudentAnalytics = () => {
   const [showTable, setShowTable] = useState(null);
   const [filterOption, setFilterOption] = useState("weekly");
   const [loading, setLoading] = useState(false);
+  const[totalStudent, setTotalStudent] = useState(null)
   console.log(chartData)
 
   // Helper function to generate a date range excluding Sundays
@@ -41,11 +42,20 @@ const StudentAnalytics = () => {
 
   // Fetch student data from API
   const fetchStudentData = async () => {
-    setLoading(true)
-    if (filterOption === "dateRange" && (!startDate || !endDate)) {
-      toast.error("Please select both start and end dates.");
-      return;
-    }
+   
+
+     if(localStorage.getItem("collegeName") === "Technocrats"){
+      setLoading(true)
+
+      if (filterOption === "dateRange" && (!startDate || !endDate)) {
+        toast.error("Please select both start and end dates.");
+        setLoading(false)
+        return;
+      }
+      
+
+     
+   
 
     const dateRange =
       filterOption === "weekly"
@@ -55,23 +65,31 @@ const StudentAnalytics = () => {
           )
         : generateDateRange(startDate, endDate);
 
+
     if (filterOption === "dateRange" && startDate < new Date("2025-01-06")) {
       toast.error("Data is not accessible before 2025-01-06.");
+      setLoading(false)
       return;
     }
 
     if (filterOption === "dateRange" && endDate > new Date()) {
       toast.error("Future data is not accessible.");
+      setLoading(false)
       return;
     }
 
     if (startDate && endDate && startDate > endDate) {
       toast.error("Start date cannot be later than the end date.");
+      setLoading(false)
       return;
     }
  console.log(" data range range  ", dateRange)
+
+
+
     try {
       const apiUrl ="https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/bhopalstudentbulkdata";
+      const bhopalstudenttotalapi = 'https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/totalbhopalstudent';
         
 
       const response = await axios.post(
@@ -79,26 +97,141 @@ const StudentAnalytics = () => {
         { date: dateRange },
         { headers: { "Content-Type": "application/json" } }
       );
+
+ const totalstudentResponce = await axios.get(
+  bhopalstudenttotalapi, { headers: { "Content-Type": "application/json" } }
+
+
+ )
+
+ setTotalStudent(totalstudentResponce?.data || null);
+ console.log(" total student....... ", totalStudent)
+
  console.log(" response data.............. ", response)
-      const processedData = response.data.map((result, index) => {
-        const studentCount = result || 0; // Adjust based on API response structure
-        const totalStudents = 239; // Replace with a dynamic value if needed
-        return {
-          day: dateRange[index] || "Unknown Day",
-          totalStudents,
-          presentStudents: studentCount,
-          absentStudents: totalStudents - studentCount,
-        };
-      });
- console.log(response)
-      setChartData(processedData);
-      setShowTable(processedData);
+ if(totalStudent!= null){
+  const processedData = response.data.map((result, index) => {
+    const studentCount = result || 0; // Adjust based on API response structure
+    const totalStudents = totalStudent ; // Replace with a dynamic value if needed
+    return {
+      day: dateRange[index] || "Unknown Day",
+      totalStudents,
+      presentStudents: studentCount,
+      absentStudents: totalStudents - studentCount,
+    };
+  });
+console.log(response)
+  setChartData(processedData);
+  setShowTable(processedData);
+
+ }
+     
     } catch (error) {
       console.error("Error fetching or processing student data:", error);
     }
+    
     finally{
       setLoading(false)
     }
+  }
+  if(localStorage.getItem("collegeName") === "Mathura"){
+    setLoading(true)
+
+    if (filterOption === "dateRange" && (!startDate || !endDate)) {
+      toast.error("Please select both start and end dates.");
+    setLoading(false)
+
+      return;
+    }
+    
+
+   
+ 
+
+  const dateRange =
+    filterOption === "weekly"
+      ? generateDateRange(
+          new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+          new Date()
+        )
+      : generateDateRange(startDate, endDate);
+
+
+  if (filterOption === "dateRange" && startDate < new Date("2025-01-21")) {
+    toast.error("Data is not accessible before 2025-01-21.");
+    setLoading(false)
+
+    return;
+  }
+
+  if (filterOption === "dateRange" && endDate > new Date()) {
+    toast.error("Future data is not accessible.");
+    setLoading(false)
+
+    return;
+  }
+
+  if (startDate && endDate && startDate > endDate) {
+    toast.error("Start date cannot be later than the end date.");
+    setLoading(false)
+
+    return;
+  }
+console.log(" data range range  ", dateRange)
+
+  try {
+    const apiUrl ="https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/mathurabulkstudent";
+    const mathurastudenttotalapi = 'https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/totalmathurastudent';
+      
+
+    const response = await axios.post(
+      apiUrl,
+      { date: dateRange },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+const totalstudentResponce = await axios.get(
+  mathurastudenttotalapi, { headers: { "Content-Type": "application/json" } }
+
+
+)
+
+setTotalStudent(totalstudentResponce?.data || null);
+console.log(" total student....... ", totalStudent)
+
+console.log(" response data.............. ", response)
+if(totalStudent!= null){
+const processedData = response.data.map((result, index) => {
+  const studentCount = result || 0; // Adjust based on API response structure
+  const totalStudents = totalStudent ; // Replace with a dynamic value if needed
+  return {
+    day: dateRange[index] || "Unknown Day",
+    totalStudents,
+    presentStudents: studentCount,
+    absentStudents: totalStudents - studentCount,
+  };
+});
+console.log(response)
+setChartData(processedData);
+setShowTable(processedData);
+
+}
+   
+  } catch (error) {
+    console.error("Error fetching or processing student data:", error);
+  }
+  
+  finally{
+    setLoading(false)
+  }
+
+  }
+  else{
+    toast.error(" Choose any one Bhopal Or Mathura")
+
+  }
+
+
+
   };
 
   useEffect(() => {

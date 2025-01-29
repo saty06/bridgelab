@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import './style.css'
 
 import axios from "axios";
 import ImageBackground from "../image/image";
@@ -204,7 +205,7 @@ const StudentAbasentTable = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto custom-scrollbar">
             <table className="min-w-full divide-y divide-gray-700">
               <thead>
                 <tr>
@@ -225,6 +226,9 @@ const StudentAbasentTable = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Tech Stack
                   </th>
                 </tr>
               </thead>
@@ -270,6 +274,9 @@ const StudentAbasentTable = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm text-gray-300">{finalDate}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm text-gray-300">{user.Lab ||"Null"}</span>
                     </td>
                   </motion.tr>
                 ))}

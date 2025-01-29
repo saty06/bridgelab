@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import ImageBackground from "../image/image";
 import { Oval  } from "react-loader-spinner";
+import './style.css'
 
 const StudentTable = ({ compushName }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -97,7 +98,7 @@ const StudentTable = ({ compushName }) => {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto custom-scrollbar">
             <table className="min-w-full divide-y divide-gray-700">
               <thead>
                 <tr>
@@ -111,7 +112,7 @@ const StudentTable = ({ compushName }) => {
                     Program
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Lab
+                  Tech Stack
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                     Cohort

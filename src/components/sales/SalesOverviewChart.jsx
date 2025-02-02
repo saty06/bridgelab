@@ -9,6 +9,7 @@ import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Toaster, toast } from "react-hot-toast";
 import { Oval } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
 
 const StudentAbasentTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,6 +18,13 @@ const StudentAbasentTable = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [finalDate, setFinalDate] = useState();
   const [loading, setLoading] = useState(false);
+   const navigate = useNavigate();
+  
+  const StudentDetail=(value)=>{
+    navigate(`/student/${value}`)
+
+
+  }
   
 
   // Fetch attendance data
@@ -216,19 +224,19 @@ const StudentAbasentTable = () => {
                     Email
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Attendance
+                    Attendance   
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Cohort
+                       Date
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    BL_Engineer
+                      Cohort
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Date
+                      Tech Stack
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                  Tech Stack
+                  BL_Engineer
                   </th>
                 </tr>
               </thead>
@@ -243,7 +251,10 @@ const StudentAbasentTable = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-                          {user.Name.charAt(0)}
+                         <button key={user.Email_Id}  onClick={()=> StudentDetail(user.Email_Id)}   >
+                         {user.Name.charAt(0)}
+                         </button>
+                          
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-100">
@@ -264,19 +275,19 @@ const StudentAbasentTable = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm text-gray-300">
-                        {user.Cohort}
+                       {finalDate}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm text-gray-300">
-                        {user.BL_Engineer}
+                         {user.Cohort}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-300">{finalDate}</span>
+                      <span className="text-sm text-gray-300">  {user.Lab ||"Null"}  </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-300">{user.Lab ||"Null"}</span>
+                      <span className="text-sm text-gray-300">  {user.BL_Engineer} </span>
                     </td>
                   </motion.tr>
                 ))}

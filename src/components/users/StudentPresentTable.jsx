@@ -20,11 +20,11 @@ const StudentPresentTable = () => {
   const navigate = useNavigate();
 
 
-  // const StudentDetail=(value)=>{
-  //   navigate(`/student/profile/:${value}`)
+  const StudentDetail=(value)=>{
+    navigate(`/student/${value}`)
 
 
-  // }
+  }
 
   // Fetch attendance data
   const fetchStudentData = async () => {
@@ -146,7 +146,7 @@ const StudentPresentTable = () => {
       user.capgemini_student_cohort,
       user.capgemini_lab,
       user.capgemini_Bl_Engineer
-
+ 
     ]);
 
     const csvContent = [headers, ...rows]
@@ -187,7 +187,7 @@ const StudentPresentTable = () => {
         </div>
       )}
           <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
-            <h2 className="text-lg md:text-xl font-semibold text-gray-100 text-center md:text-left">
+            <h2 className="text-lg md:text-xl font-semibold text-gray-100 text-center md:text-left font-sans">
               Total Students Present on{" "}
               {new Date(selectedDate).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -266,7 +266,7 @@ const StudentPresentTable = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
                           <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold"  >
-                           <button key={user.email} >
+                           <button key={user.email}  onClick={()=> StudentDetail(user.email)} >
 
                            {user.name.charAt(0)}
                            </button>

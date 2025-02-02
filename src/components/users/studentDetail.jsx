@@ -1,133 +1,133 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
-import ImageBackground from "../image/image";
 import { saveAs } from "file-saver";
-import ReactDatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 import { Toaster, toast } from "react-hot-toast";
-import { Oval  } from "react-loader-spinner";
+import { Oval } from "react-loader-spinner";
+import { useParams } from "react-router-dom";
+import ImageBackground from "../image/image";
 
 const StudentDetail = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const { email } = useParams();
   const [users, setUsers] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [totalStudent, setTotalStudent] = useState(null);
+  const [absentUsers, setAbsentUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [attendanceStatus, setAttendanceStatus] = useState("Present"); // All 
 
-  // Fetch attendance data
-  const fetchStudentData = async () => {
-    setLoading(true)
-    let formattedDate = null;
-    if (selectedDate) {
-      const date = new Date(selectedDate); // Your input date
+  console.log(email);
 
-      // Extract day, month, and year
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-      const year = date.getFullYear();
+  // Generate date range excluding Sundays
+  const generateDateRange = (startDate) => {
+    let dates = [];
+    let currentDate = new Date(startDate);
+    let lastDate = new Date();
 
-      // Format the date
-      formattedDate = `${month}/${day}/${year}`;
-      console.log(formattedDate); // Outputs: "17/01/2025"
-    }
-    const dayOfWeek = selectedDate.getDay();
-    if (
-      selectedDate > new Date() ||
-      selectedDate < new Date("2025-01-06") ||
-      dayOfWeek === 0
-    ) {
-      toast.error("Data cannot be accessed on Sundays or future data!", {
-        style: {
-          background: "#f44336",
-          color: "#fff",
-        },
-        icon: "❌",
-      });
-      return;
-    }
-    try {
-      if (localStorage.getItem("collegeName") === "Technocrats") {
-        const response = await axios.post(
-          "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/getstudentdetail",
-          { check: true, date: formattedDate },
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-        console.log("Attendance response data:......", response?.data.length);
-        setTotalStudent(response?.data?.length);
-
-        setUsers(response?.data.flat(Infinity) || []);
-
-        setFilteredUsers(response?.data.flat(Infinity));
-        toast.success("Data fetched successfully!", {
-          style: {
-            background: "#4caf50",
-            color: "#fff",
-          },
-          icon: "✅",
-        });
-      } else if (localStorage.getItem("collegeName") === "Mathura") {
-        const response = await axios.post(
-          "https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/studentattendance",
-          { check: true, date: formattedDate },
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        console.log("Attendance response data:", response?.data);
-        setTotalStudent(response?.data?.length);
-        setUsers(response?.data.flat(Infinity) || []);
-
-        setFilteredUsers(response?.data.flat(Infinity));
-        toast.success("Data fetched successfully!", {
-          style: {
-            background: "#4caf50",
-            color: "#fff",
-          },
-          icon: "✅",
-        });
+    while (currentDate <= lastDate) {
+      if (currentDate.getDay() !== 0) {
+        dates.push(currentDate.toISOString().split("T")[0]);
       }
-    } catch (error) {
-      toast.error("Failed to fetch data from server!", {
-        style: {
-          background: "#f44336",
-          color: "#fff",
-        },
-        icon: "❌",
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    return dates;
+  };
+
+  // Fetch absent data
+  const getAbsentData = () => {
+    const collegeName = localStorage.getItem("collegeName");
+    let date;
+    const collegeDates = {
+      "Technocrats": ["2025-01-06", "2025-01-07", "2025-01-08"],
+      "Mathura": ["2025-01-15", "2025-01-16", "2025-01-17", "2025-01-18", "2025-01-19", "2025-01-20", "2025-01-21"]
+    };
+
+    date = collegeDates[collegeName] || [];
+    if (!users.length) return [];
+
+    const allDates = generateDateRange(date[0]);
+
+    const presentDates = new Set(users.map((user) => user.created_at));
+    const userObject = users[0];
+
+    const result = allDates
+      .filter((date) => !presentDates.has(date))
+      .map((absentDate) => ({
+        created_at: absentDate,
+        attendance: date.includes(absentDate) ? "N/A" : "A",
+        cohort: userObject.cohort || null,
+        Lab: userObject.Lab || null,
+        BL_Engineer: userObject.BL_Engineer || null,
+      }));
+
+    setAbsentUsers(result);
+  };
+
+  // Fetch student data from the API based on email
+  const fetchStudentData = async (email) => {
+    setLoading(true);
+    try {
+      const collegeName = localStorage.getItem("collegeName");
+      const urls = {
+        "Technocrats": "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/bhopalstudnetdetail",
+        "Mathura": "https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/maturastudentdetail"
+      };
+
+      const url = urls[collegeName];
+      if (!url) {
+        toast.error("Invalid college selection!");
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.post(
+        url,
+        { email: `${email}` },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      setUsers(response.data || []);
+      toast.success("Data fetched successfully!", {
+        style: { background: "#4caf50", color: "#fff" },
       });
-    }
-    finally{
-      setLoading(false)
-
+    } catch (error) {
+      toast.error("Failed to fetch data!", {
+        style: { background: "#f44336", color: "#fff" },
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Handle search input
-  const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
-    const filtered = users.filter(
-      (user) =>
-        user.name.toLowerCase().includes(term) ||
-        user.email.toLowerCase().includes(term)
-    );
-    setFilteredUsers(filtered);
-  };
+  // Update filtered users based on the attendance status
+  useEffect(() => {
+    if (attendanceStatus === "All") {
+      const combinedUsers = new Set([...absentUsers, ...users]);
+ 
+
+
+    setFilteredUsers(Array.from(combinedUsers));
+    } else if (attendanceStatus === "Present") {
+      setFilteredUsers(users);
+    } else if (attendanceStatus === "Absent") {
+      setFilteredUsers(absentUsers);
+    }
+  }, [attendanceStatus, users, absentUsers]);
+
+  // Download the CSV
   const downloadCSV = () => {
     if (filteredUsers.length === 0) {
-      alert("No data available to download!");
+      toast.error("No data available to download!");
       return;
     }
 
-    const headers = ["Name", "Email", "Attendance", "Date"];
+    const headers = ["CohortName", "Lab", "Attendance", "BL_Engineer", "Date"];
     const rows = filteredUsers.map((user) => [
-      user.name,
-      user.email,
-      "P", // Absent
+      user.cohort || "N/A",
+      user.Lab || "N/A",
+      user.attendance || "N/A",
+      user.BL_Engineer || "N/A",
       new Date(user.created_at).toLocaleString("en-IN", {
         timeZone: "Asia/Kolkata",
         hour12: false,
@@ -138,70 +138,59 @@ const StudentDetail = () => {
       .map((row) => row.join(","))
       .join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, "present_students.csv");
+    saveAs(
+      new Blob([csvContent], { type: "text/csv;charset=utf-8;" }),
+      `${users[0]?.name} ${users[0].created_at}.csv`
+    );
   };
 
+  // Fetch data when email changes
   useEffect(() => {
-    fetchStudentData();
-  }, [selectedDate]); // Added an empty dependency array to prevent infinite loop
+    if (email) {
+      fetchStudentData(email);
+    }
+  }, [email]);
 
-  console.log(" time to  take data  ", selectedDate);
+  // Get absent data when users are loaded
+  useEffect(() => {
+    getAbsentData();
+  }, [users]);
 
   return (
     <>
-      {users.length > 0 && (
+      <Toaster position="top-right" reverseOrder={false} />
+      {loading ? (
+        <div className="flex justify-center items-center py-4">
+          <Oval height="50" width="50" color="#4caf50" ariaLabel="loading-indicator" />
+        </div>
+      ) : filteredUsers.length > 0 ? (
         <motion.div
           className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Toaster position="top-right" reverseOrder={false} />
-          {loading && (
-        <div className="flex justify-center items-center py-4">
-          {/* Replace with your preferred spinner */}
-          <Oval 
-            height="50"
-            width="50"
-            color="#4caf50"
-            ariaLabel="loading-indicator"
-          />
-        </div>
-      )}
-          <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
-            <h2 className="text-lg md:text-xl font-semibold text-gray-100 text-center md:text-left">
-              Total Students Present on{" "}
-              {new Date(selectedDate).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
+          <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+            <h2 className="text-lg md:text-xl font-semibold text-gray-100">
+              {users[0]?.name || "Student Data"}
             </h2>
-            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-              {totalStudent}
-            </div>
-            <div className="relative w-full md:w-auto flex items-center space-x-4">
-              <input
-                type="text"
-                placeholder="Search users..."
-                className="bg-gray-700 text-white placeholder-gray-400 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-64"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-             
+
+            <div className="flex items-center space-x-4">
               <button
-                className="bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-700 text-white rounded-lg px-4 py-2"
                 onClick={downloadCSV}
               >
                 Download CSV
               </button>
-              <ReactDatePicker
-                selected={selectedDate}
-                onChange={(date) => setSelectedDate(date)}
-                className="bg-gray-700 text-white rounded-lg px-4 py-2 w-full md:w-auto"
-                dateFormat="yyyy-MM-dd"
-              />
+              <select
+                className="bg-gray-700 text-white rounded-lg px-4 py-2"
+                value={attendanceStatus}
+                onChange={(e) => setAttendanceStatus(e.target.value)}
+              >
+                {/* <option value="All">All</option>   */}
+                <option value="Present">Present</option>
+                {/* <option value="Absent">Absent</option>  */}
+              </select>
             </div>
           </div>
 
@@ -209,77 +198,44 @@ const StudentDetail = () => {
             <table className="min-w-full divide-y divide-gray-700">
               <thead>
                 <tr>
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Attendance
-                  </th>
-                  <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Date
-                  </th>
+                  {["Date", "Attendance", "Cohort", "Tech Stack", "BL_Engineer"].map((header) => (
+                    <th key={header} className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                      {header}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {filteredUsers?.map((user, index) => (
-                  <motion.tr
-                    key={index}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-                            {user.name.charAt(0)}
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-100">
-                            {user.name}
-                          </div>
-                        </div>
-                      </div>
+                {filteredUsers.map((user, index) => (
+                  <motion.tr key={index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                    <td className="px-4 py-4">
+                      {new Date(user.created_at).toLocaleDateString("en-US", {
+                        weekday: "long", 
+                        month: "long", 
+                        day: "2-digit", 
+                        year: "numeric", 
+                      })}
                     </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-300">{user.email}</div>
+                    <td
+                      className={`px-4 py-4 h-10 w-10 rounded-full bg-gradient-to-r to-blue-500 flex items-center justify-center font-semibold ${
+                        user.attendance === "A" ? "text-red-500" : "text-green-500"
+                      }`}
+                    >
+                      {user.attendance || "N/A"}
                     </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-800 text-blue-100">
-                        {user.attendance || "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-300">
-                        {new Date(user.created_at).toLocaleString("en-IN", {
-                          timeZone: "Asia/Kolkata",
-                          hour12: false,
-                        })}
-                      </span>
-                    </td>
+                    <td className="px-4 py-4">{user.cohort || "N/A"}</td>
+                    <td className="px-4 py-4">{user.Lab || "N/A"}</td>
+                    <td className="px-4 py-4">{user.BL_Engineer || "N/A"}</td>
                   </motion.tr>
                 ))}
               </tbody>
             </table>
           </div>
         </motion.div>
-      )}
-      {users.length <= 0 && (
+      ) : (
         <div className="text-center">
-          <Toaster position="top-right" reverseOrder={false} />
-          <div className="my-6">
-            <ReactDatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              className="bg-gray-700 text-white rounded-lg px-4 py-2"
-              dateFormat="yyyy-MM-dd"
-            />
-          </div>
           <ImageBackground />
+          <p className="text-gray-300">No data available for {email}</p>
         </div>
       )}
     </>

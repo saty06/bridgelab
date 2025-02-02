@@ -217,7 +217,8 @@ setShowTable(processedData);
 }
    
   } catch (error) {
-    console.error("Error fetching or processing student data:", error);
+    toast.error("Error fetching or processing student data")
+  
   }
   
   finally{
@@ -327,7 +328,17 @@ setShowTable(processedData);
             <tbody>
               {showTable.map((data, index) => (
                 <tr key={index}>
-                  <td className="px-4 py-2">{data.day}</td>
+                  {/* <td className="px-4 py-2">{data.day}</td> */}
+                  <td className="px-4 py-4  ">
+                      {new Date(data.day).toLocaleDateString("en-US", {
+                        weekday: "long", // "Thursday"
+                        month: "long", // "January"
+                        day: "2-digit", // "01"
+                        year: "numeric", // "2025"
+                      })}
+                    </td>
+
+
                   <td className="px-4 py-2">{data.totalStudents}</td>
                   <td className="px-4 py-2">{data.presentStudents}</td>
                   <td className="px-4 py-2">{data.absentStudents}</td>

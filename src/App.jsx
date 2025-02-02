@@ -41,7 +41,7 @@ function App() {
             <Route path="/present" element={<UsersPage />} />
             <Route path="/absent" element={<SalesPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
-            <Route path="/student/profile/:id" element={<StudentDetailPage />} />
+            <Route path="/student/:email" element={<StudentDetailPage />} />
           </>
         )}
 

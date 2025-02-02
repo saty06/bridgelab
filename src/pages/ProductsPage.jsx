@@ -91,7 +91,7 @@ const ProductsPage = ({ chooseLocation, setvalue }) => {
   }, [filterOption]);
 
   return (
-    <div className="flex-1 overflow-auto relative z-10">
+    <div className="flex-1 overflow-auto relative z-10 font-sans">
       {/* Header */}
       <Header
         title={

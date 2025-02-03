@@ -10,66 +10,18 @@ import ImageBackground from "../image/image";
 const StudentDetail = () => {
   const { email } = useParams();
   const [users, setUsers] = useState([]);
-  const [absentUsers, setAbsentUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [attendanceStatus, setAttendanceStatus] = useState("Present"); // All 
+  const [attendanceStatus, setAttendanceStatus] = useState("All"); 
 
-  console.log(email);
-
-  // Generate date range excluding Sundays
-  const generateDateRange = (startDate) => {
-    let dates = [];
-    let currentDate = new Date(startDate);
-    let lastDate = new Date();
-
-    while (currentDate <= lastDate) {
-      if (currentDate.getDay() !== 0) {
-        dates.push(currentDate.toISOString().split("T")[0]);
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    return dates;
-  };
-
-  // Fetch absent data
-  const getAbsentData = () => {
-    const collegeName = localStorage.getItem("collegeName");
-    let date;
-    const collegeDates = {
-      "Technocrats": ["2025-01-06", "2025-01-07", "2025-01-08"],
-      "Mathura": ["2025-01-15", "2025-01-16", "2025-01-17", "2025-01-18", "2025-01-19", "2025-01-20", "2025-01-21"]
-    };
-
-    date = collegeDates[collegeName] || [];
-    if (!users.length) return [];
-
-    const allDates = generateDateRange(date[0]);
-
-    const presentDates = new Set(users.map((user) => user.created_at));
-    const userObject = users[0];
-
-    const result = allDates
-      .filter((date) => !presentDates.has(date))
-      .map((absentDate) => ({
-        created_at: absentDate,
-        attendance: date.includes(absentDate) ? "N/A" : "A",
-        cohort: userObject.cohort || null,
-        Lab: userObject.Lab || null,
-        BL_Engineer: userObject.BL_Engineer || null,
-      }));
-
-    setAbsentUsers(result);
-  };
-
-  // Fetch student data from the API based on email
-  const fetchStudentData = async (email) => {
+  // Fetch Student Data
+  const fetchStudentData = async (email, attendanceStatus) => {
     setLoading(true);
     try {
       const collegeName = localStorage.getItem("collegeName");
       const urls = {
         "Technocrats": "https://x8ki-letl-twmt.n7.xano.io/api:V6Q6GSfP/bhopalstudnetdetail",
-        "Mathura": "https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/maturastudentdetail"
+        "Mathura": "https://x8ki-letl-twmt.n7.xano.io/api:2aSKmYpj/maturastudentdetail",
       };
 
       const url = urls[collegeName];
@@ -81,16 +33,27 @@ const StudentDetail = () => {
 
       const response = await axios.post(
         url,
-        { email: `${email}` },
-        {
-          headers: { "Content-Type": "application/json" },
-        }
+        { email, check: attendanceStatus }, 
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      setUsers(response.data || []);
-      toast.success("Data fetched successfully!", {
-        style: { background: "#4caf50", color: "#fff" },
-      });
+      if(collegeName=='Technocrats'){
+        console.log("Fetched Data:", response?.data);
+        setUsers(response.data.flat(Infinity) || []);
+        setFilteredUsers(response.data.flat(Infinity) || []); // Ensure filteredUsers is updated
+              toast.success("Data fetched successfully!", {
+                style: { background: "#4caf50", color: "#fff" },
+              });
+      }
+      else if(collegeName=='Mathura'){
+        console.log("Fetched Data:", response?.data?.result.flat(Infinity)  );
+        setUsers( response?.data?.result.flat(Infinity) || []);
+        setFilteredUsers(response.data?.result.flat(Infinity) || []); // Ensure filteredUsers is updated
+              toast.success("Data fetched successfully!", {
+                style: { background: "#4caf50", color: "#fff" },
+              });
+      }
+ 
     } catch (error) {
       toast.error("Failed to fetch data!", {
         style: { background: "#f44336", color: "#fff" },
@@ -100,22 +63,14 @@ const StudentDetail = () => {
     }
   };
 
-  // Update filtered users based on the attendance status
+  // Fetch data when email or attendance status changes
   useEffect(() => {
-    if (attendanceStatus === "All") {
-      const combinedUsers = new Set([...absentUsers, ...users]);
- 
-
-
-    setFilteredUsers(Array.from(combinedUsers));
-    } else if (attendanceStatus === "Present") {
-      setFilteredUsers(users);
-    } else if (attendanceStatus === "Absent") {
-      setFilteredUsers(absentUsers);
+    if (email) {
+      fetchStudentData(email, attendanceStatus);
     }
-  }, [attendanceStatus, users, absentUsers]);
+  }, [email, attendanceStatus]);
 
-  // Download the CSV
+  // Download CSV
   const downloadCSV = () => {
     if (filteredUsers.length === 0) {
       toast.error("No data available to download!");
@@ -140,21 +95,9 @@ const StudentDetail = () => {
 
     saveAs(
       new Blob([csvContent], { type: "text/csv;charset=utf-8;" }),
-      `${users[0]?.name} ${users[0].created_at}.csv`
+      `${users[0]?.name || "Student"}_${users[0]?.created_at || "Data"}.csv`
     );
   };
-
-  // Fetch data when email changes
-  useEffect(() => {
-    if (email) {
-      fetchStudentData(email);
-    }
-  }, [email]);
-
-  // Get absent data when users are loaded
-  useEffect(() => {
-    getAbsentData();
-  }, [users]);
 
   return (
     <>
@@ -187,9 +130,9 @@ const StudentDetail = () => {
                 value={attendanceStatus}
                 onChange={(e) => setAttendanceStatus(e.target.value)}
               >
-                {/* <option value="All">All</option>   */}
-                <option value="Present">Present</option>
-                {/* <option value="Absent">Absent</option>  */}
+                 <option value="All">All</option>
+                <option value="absent">Absent</option>
+                <option value="present">Present</option>
               </select>
             </div>
           </div>
@@ -209,7 +152,7 @@ const StudentDetail = () => {
                 {filteredUsers.map((user, index) => (
                   <motion.tr key={index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
                     <td className="px-4 py-4">
-                      {new Date(user.created_at).toLocaleDateString("en-US", {
+                      {new Date(user.date || user.created_at || users.today).toLocaleDateString("en-US", {
                         weekday: "long", 
                         month: "long", 
                         day: "2-digit", 

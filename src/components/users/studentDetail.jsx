@@ -83,7 +83,7 @@ const StudentDetail = () => {
       user.Lab || "N/A",
       user.attendance || "N/A",
       user.BL_Engineer || "N/A",
-      new Date(user.created_at).toLocaleString("en-IN", {
+      new Date(user.date || user.created_at || users.today ).toLocaleString("en-IN", {
         timeZone: "Asia/Kolkata",
         hour12: false,
       }),
@@ -152,7 +152,7 @@ const StudentDetail = () => {
                 {filteredUsers.map((user, index) => (
                   <motion.tr key={index} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
                     <td className="px-4 py-4">
-                      {new Date(user.date || user.created_at || users.today).toLocaleDateString("en-US", {
+                      {new Date(user.date || user.created_at || users.today ).toLocaleDateString("en-US", {
                         weekday: "long", 
                         month: "long", 
                         day: "2-digit", 
